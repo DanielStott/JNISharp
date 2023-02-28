@@ -1,6 +1,6 @@
 ﻿namespace JNISharp.NativeInterface;
 
-public class JThrowable : JObject
+public record JThrowable : JObject
 {
     public JThrowable() { }
 

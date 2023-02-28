@@ -1,6 +1,6 @@
 ﻿namespace JNISharp.NativeInterface;
 
-public class JClass : JObject
+public record JClass : JObject
 {
     private Dictionary<Tuple<string, string>, JFieldID> FieldCache { get; set; } = new();
 

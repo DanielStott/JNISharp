@@ -3,7 +3,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class JArray<T> : JObject, IEnumerable<T>
+public record JArray<T> : JObject, IEnumerable<T>
 {
     public JArray() : base() { }
 

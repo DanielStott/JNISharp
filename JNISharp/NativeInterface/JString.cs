@@ -1,6 +1,6 @@
 ﻿namespace JNISharp.NativeInterface;
 
-public class JString : JObject
+public record JString : JObject
 {
     public JString() : base() { }
 

@@ -1,6 +1,6 @@
 ﻿namespace JNISharp.NativeInterface;
 
-public class JObject : IDisposable
+public record JObject : IDisposable
 {
     private bool Disposed { get; set; }
 
@@ -12,22 +12,24 @@ public class JObject : IDisposable
 
     public JObject(IntPtr handle, JNI.ReferenceType referenceType)
     {
-        this.Handle = handle;
-        this.ReferenceType = referenceType;
+        Handle = handle;
+        ReferenceType = referenceType;
     }
 
-    public JObject(JObject obj) : this(obj.Handle, obj.ReferenceType) 
+    public JObject(JObject obj) 
     {
-        this.Disposed = obj.Disposed;
+        Handle = obj.Handle;
+        ReferenceType = obj.ReferenceType; 
+        Disposed = obj.Disposed;
         obj.Disposed = true;
     }
 
     protected virtual void Dispose(bool disposing)
     {
-        if (Disposed || this.Handle == IntPtr.Zero)
+        if (Disposed || Handle == IntPtr.Zero)
             return;
 
-        switch (this.ReferenceType)
+        switch (ReferenceType)
         {
             case JNI.ReferenceType.Local:
                 JNI.DeleteLocalRef(this);
@@ -47,7 +49,7 @@ public class JObject : IDisposable
 
     public bool Valid()
     {
-        return this.Handle != IntPtr.Zero;
+        return Handle != IntPtr.Zero;
     }
 
     ~JObject()

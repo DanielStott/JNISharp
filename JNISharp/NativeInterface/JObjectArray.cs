@@ -2,7 +2,7 @@
 
 using System.Collections;
 
-public class JObjectArray<T> : JObject, IEnumerable<T> where T : JObject, new()
+public record JObjectArray<T> : JObject, IEnumerable<T> where T : JObject, new()
 {
     public int Length => JNI.GetArrayLength(this);
 
