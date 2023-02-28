@@ -1,6 +1,5 @@
 ﻿namespace JNISharp.ToolInterface;
 
-
 public class JMethodSignature
 {
     public string Name { get; init; }

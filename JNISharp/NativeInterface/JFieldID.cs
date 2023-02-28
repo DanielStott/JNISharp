@@ -11,7 +11,7 @@ public readonly struct JFieldID : IEquatable<JFieldID>
 
     public static implicit operator IntPtr(JFieldID fieldID) => fieldID.Handle;
 
-    public static implicit operator JFieldID(IntPtr pointer) => new(pointer);
+    public static implicit operator JFieldID(IntPtr pointer) => new (pointer);
 
     public bool Equals(JFieldID other)
     {

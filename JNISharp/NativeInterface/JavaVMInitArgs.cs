@@ -21,4 +21,3 @@ public unsafe struct JavaVMInitArgs
         this.IgnoreUnrecognized = ignoreUnrecognized;
     }
 }
-

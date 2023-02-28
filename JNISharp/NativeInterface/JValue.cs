@@ -5,32 +5,23 @@ using System.Runtime.InteropServices;
 [StructLayout(LayoutKind.Explicit, Size = 8)]
 public readonly struct JValue
 {
-    [FieldOffset(0)]
-    public readonly byte Z;
+    [FieldOffset(0)] public readonly byte Z;
 
-    [FieldOffset(0)]
-    public readonly sbyte B;
+    [FieldOffset(0)] public readonly sbyte B;
 
-    [FieldOffset(0)]
-    public readonly char C;
+    [FieldOffset(0)] public readonly char C;
 
-    [FieldOffset(0)]
-    public readonly short S;
+    [FieldOffset(0)] public readonly short S;
 
-    [FieldOffset(0)]
-    public readonly int I;
+    [FieldOffset(0)] public readonly int I;
 
-    [FieldOffset(0)]
-    public readonly long J;
+    [FieldOffset(0)] public readonly long J;
 
-    [FieldOffset(0)]
-    public readonly float F;
+    [FieldOffset(0)] public readonly float F;
 
-    [FieldOffset(0)]
-    public readonly double D;
+    [FieldOffset(0)] public readonly double D;
 
-    [FieldOffset(0)]
-    public readonly IntPtr L;
+    [FieldOffset(0)] public readonly IntPtr L;
 
     public JValue(bool value)
     {
@@ -95,6 +86,7 @@ public readonly struct JValue
     public JValue(object value)
     {
         this = new JValue();
+
         switch (value)
         {
             case bool z:

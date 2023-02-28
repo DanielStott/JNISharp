@@ -5,7 +5,9 @@ using System.Collections.Generic;
 
 public record JArray<T> : JObject, IEnumerable<T>
 {
-    public JArray() : base() { }
+    public JArray() : base()
+    {
+    }
 
     public JArray(int size) => JNI.NewArray<T>(size);
 

@@ -2,7 +2,9 @@
 
 public record JString : JObject
 {
-    public JString() : base() { }
+    public JString() : base()
+    {
+    }
 
     public string GetString() => JNI.GetJStringString(this);
 }

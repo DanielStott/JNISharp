@@ -8,7 +8,9 @@ public record JObject : IDisposable
 
     internal JNI.ReferenceType ReferenceType { get; init; }
 
-    public JObject() { }
+    public JObject()
+    {
+    }
 
     public JObject(IntPtr handle, JNI.ReferenceType referenceType)
     {
@@ -16,10 +18,10 @@ public record JObject : IDisposable
         ReferenceType = referenceType;
     }
 
-    public JObject(JObject obj) 
+    public JObject(JObject obj)
     {
         Handle = obj.Handle;
-        ReferenceType = obj.ReferenceType; 
+        ReferenceType = obj.ReferenceType;
         Disposed = obj.Disposed;
         obj.Disposed = true;
     }

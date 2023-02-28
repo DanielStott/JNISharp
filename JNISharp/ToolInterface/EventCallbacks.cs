@@ -3,7 +3,6 @@
 using JNISharp.NativeInterface;
 using System.Runtime.InteropServices;
 
-
 public static partial class JVMTI
 {
     [StructLayout(LayoutKind.Sequential)]

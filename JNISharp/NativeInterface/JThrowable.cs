@@ -2,7 +2,9 @@
 
 public record JThrowable : JObject
 {
-    public JThrowable() { }
+    public JThrowable()
+    {
+    }
 
     public string GetMessage() => JNI.FindClass("java/lang/Throwable").CallObjectMethod<JString>(this, "getMessage", "()Ljava/lang/String;").GetString();
 

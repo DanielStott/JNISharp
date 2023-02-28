@@ -3,12 +3,11 @@
 using JNISharp.NativeInterface;
 using System.Runtime.InteropServices;
 
-
 public unsafe static partial class JVMTI
 {
     internal static JVMTIEnv* Env;
 
-    internal static Dictionary<string, JClass> LoadedClassCache { get; set; } = new();
+    internal static Dictionary<string, JClass> LoadedClassCache { get; set; } = new ();
 
     static JVMTI()
     {
@@ -84,6 +83,7 @@ public unsafe static partial class JVMTI
                 genericString = Marshal.PtrToStringAnsi(genericPtr);
             }
         }
+
         Deallocate(sigPtr);
         Deallocate(genericPtr);
 
@@ -166,6 +166,7 @@ public unsafe static partial class JVMTI
                 if (sigPtr != IntPtr.Zero)
                 {
                     sig = Marshal.PtrToStringAnsi(sigPtr);
+
                     if (genericPtr != IntPtr.Zero)
                     {
                         generic = Marshal.PtrToStringAnsi(genericPtr);
@@ -202,10 +203,12 @@ public unsafe static partial class JVMTI
             {
                 name = Marshal.PtrToStringAnsi(namePtr);
                 Deallocate(namePtr);
+
                 if (sigPtr != IntPtr.Zero)
                 {
                     sig = Marshal.PtrToStringAnsi(sigPtr);
                     Deallocate(sigPtr);
+
                     if (genericPtr != IntPtr.Zero)
                     {
                         generic = Marshal.PtrToStringAnsi(genericPtr);

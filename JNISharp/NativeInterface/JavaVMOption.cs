@@ -15,4 +15,3 @@ public unsafe struct JavaVMOption
         this.ExtraInfo = IntPtr.Zero;
     }
 }
-

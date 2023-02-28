@@ -2,15 +2,17 @@
 
 public record JClass : JObject
 {
-    private Dictionary<Tuple<string, string>, JFieldID> FieldCache { get; set; } = new();
+    private Dictionary<Tuple<string, string>, JFieldID> FieldCache { get; set; } = new ();
 
-    private Dictionary<Tuple<string, string>, JMethodID> MethodCache { get; set; } = new();
+    private Dictionary<Tuple<string, string>, JMethodID> MethodCache { get; set; } = new ();
 
-    public JClass() : base() { }
+    public JClass() : base()
+    {
+    }
 
     public JFieldID GetFieldID(string name, string sig)
     {
-        Tuple<string, string> key = new(name, sig);
+        Tuple<string, string> key = new (name, sig);
 
         if (this.FieldCache.TryGetValue(key, out JFieldID found))
         {
@@ -26,7 +28,7 @@ public record JClass : JObject
 
     public JFieldID GetStaticFieldID(string name, string sig)
     {
-        Tuple<string, string> key = new(name, sig);
+        Tuple<string, string> key = new (name, sig);
 
         if (this.FieldCache.TryGetValue(key, out JFieldID found))
         {
@@ -42,7 +44,7 @@ public record JClass : JObject
 
     public JMethodID GetMethodID(string name, string sig)
     {
-        Tuple<string, string> key = new(name, sig);
+        Tuple<string, string> key = new (name, sig);
 
         if (this.MethodCache.TryGetValue(key, out JMethodID found))
         {
@@ -58,7 +60,7 @@ public record JClass : JObject
 
     public JMethodID GetStaticMethodID(string name, string sig)
     {
-        Tuple<string, string> key = new(name, sig);
+        Tuple<string, string> key = new (name, sig);
 
         if (this.MethodCache.TryGetValue(key, out JMethodID found))
         {

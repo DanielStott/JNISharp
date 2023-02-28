@@ -1,6 +1,5 @@
 ﻿namespace JNISharp.ToolInterface;
 
-
 [Flags]
 public enum JClassAccessFlags
 {

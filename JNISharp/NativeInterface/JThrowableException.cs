@@ -4,7 +4,9 @@ public class JThrowableException : Exception
 {
     public JThrowable Throwable { get; init; }
 
-    public JThrowableException() { }
+    public JThrowableException()
+    {
+    }
 
     public JThrowableException(JThrowable throwable) : base()
     {
