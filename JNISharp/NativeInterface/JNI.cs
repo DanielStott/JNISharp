@@ -21,7 +21,9 @@ public static unsafe partial class JNI
                 var res = VM->Functions->AttachCurrentThread(VM, out env, ref temp);
 
                 if (res != Result.Ok)
+                {
                     throw new JNIResultException(res);
+                }
             }
 
             return env;
@@ -33,9 +35,11 @@ public static unsafe partial class JNI
     public static void Initialize(JavaVMInitArgs args)
     {
         var res = JVMImports.JNI_CreateJavaVM(out VM, out env, &args);
-        if (res != Result.Ok)
-            throw new JNIResultException(res);
 
+        if (res != Result.Ok)
+        {
+            throw new JNIResultException(res);
+        }
     }
 
     public static void InitializeFromCreatedVM()
@@ -43,17 +47,23 @@ public static unsafe partial class JNI
         var res = JVMImports.JNI_GetCreatedJavaVMs(out VM, 1, out var _);
 
         if (res != Result.Ok)
+        {
             throw new JNIResultException(res);
+        }
 
         var temp = IntPtr.Zero;
         res = VM->Functions->AttachCurrentThread(VM, out env, ref temp);
 
         if (res != Result.Ok)
+        {
             throw new JNIResultException(res);
-
+        }
     }
 
-    public static int GetVersion() => Env->Functions->GetVersion(Env);
+    public static int GetVersion()
+    {
+        return Env->Functions->GetVersion(Env);
+    }
 
     public static JClass DefineClass(string name, JObject loader, sbyte[] bytes)
     {
@@ -66,13 +76,14 @@ public static unsafe partial class JNI
 
         using JClass local = new () { Handle = res, ReferenceType = ReferenceType.Local };
         return NewGlobalRef<JClass>(local);
-
     }
 
     public static JClass FindClass(string name)
     {
         if (ClassCache.TryGetValue(name, out var found))
+        {
             return found;
+        }
 
         var nameAnsi = Marshal.StringToHGlobalAnsi(name);
         var res = Env->Functions->FindClass(Env, nameAnsi);
@@ -83,12 +94,17 @@ public static unsafe partial class JNI
         var global = NewGlobalRef<JClass>(local);
         ClassCache.Add(name, global);
         return global;
-
     }
 
-    public static JMethodID FromReflectedMethod(JObject method) => Env->Functions->FromReflectedMethod(Env, method.Handle);
+    public static JMethodID FromReflectedMethod(JObject method)
+    {
+        return Env->Functions->FromReflectedMethod(Env, method.Handle);
+    }
 
-    public static JFieldID FromReflectedField(JObject field) => Env->Functions->FromReflectedField(Env, field.Handle);
+    public static JFieldID FromReflectedField(JObject field)
+    {
+        return Env->Functions->FromReflectedField(Env, field.Handle);
+    }
 
     public static JObject ToReflectedMethod(JClass cls, JMethodID methodID, bool isStatic)
     {
@@ -96,7 +112,6 @@ public static unsafe partial class JNI
 
         using JObject local = new () { Handle = res, ReferenceType = ReferenceType.Local };
         return NewGlobalRef<JObject>(local);
-
     }
 
     public static JClass GetSuperClass(JClass sub)
@@ -105,17 +120,21 @@ public static unsafe partial class JNI
 
         using JClass local = new () { Handle = res, ReferenceType = ReferenceType.Local };
         return NewGlobalRef<JClass>(local);
-
     }
 
-    public static bool IsAssignableFrom(JClass sub, JClass sup) => Convert.ToBoolean(Env->Functions->IsAssignableFrom(Env, sub.Handle, sup.Handle));
+    public static bool IsAssignableFrom(JClass sub, JClass sup)
+    {
+        return Convert.ToBoolean(Env->Functions->IsAssignableFrom(Env, sub.Handle, sup.Handle));
+    }
 
-    public static JObject ToReflectedField(JClass cls, JFieldID fieldID, bool isStatic) => throw new NotImplementedException();
+    public static JObject ToReflectedField(JClass cls, JFieldID fieldID, bool isStatic)
+    {
+        throw new NotImplementedException();
+    }
 
     public static void Throw(JThrowable throwable)
     {
         var res = Env->Functions->Throw(Env, throwable.Handle);
-
     }
 
     public static void ThrowNew(JClass cls, string message)
@@ -123,7 +142,6 @@ public static unsafe partial class JNI
         var messageAnsi = Marshal.StringToHGlobalAnsi(message);
         var res = Env->Functions->Throw(Env, messageAnsi);
         Marshal.FreeHGlobal(messageAnsi);
-
     }
 
     public static JThrowable ExceptionOccurred()
@@ -132,19 +150,16 @@ public static unsafe partial class JNI
 
         using JThrowable local = new () { Handle = res, ReferenceType = ReferenceType.Local };
         return NewGlobalRef<JThrowable>(local);
-
     }
 
     public static void ExceptionDescribe()
     {
         Env->Functions->ExceptionDescribe(Env);
-
     }
 
     public static void ExceptionClear()
     {
         Env->Functions->ExceptionClear(Env);
-
     }
 
     public static void FatalError(string message)
@@ -152,28 +167,35 @@ public static unsafe partial class JNI
         throw new NotImplementedException();
     }
 
-    public static int PushLocalFrame(int capacity) => throw new NotImplementedException();
+    public static int PushLocalFrame(int capacity)
+    {
+        throw new NotImplementedException();
+    }
 
-    public static JObject PopLocalFrame(JObject result) => throw new NotImplementedException();
+    public static JObject PopLocalFrame(JObject result)
+    {
+        throw new NotImplementedException();
+    }
 
     public static T NewGlobalRef<T>(JObject lobj) where T : JObject, new()
     {
         var res = Env->Functions->NewGlobalRef(Env, lobj.Handle);
-        return new T
-            { Handle = res, ReferenceType = ReferenceType.Global };
-
+        return new T { Handle = res, ReferenceType = ReferenceType.Global };
     }
 
     public static void DeleteGlobalRef(JObject gref)
     {
         if (gref == null)
+        {
             return;
+        }
 
         if (!gref.Valid())
+        {
             return;
+        }
 
         Env->Functions->DeleteGlobalRef(Env, gref.Handle);
-
     }
 
     public static void CheckExceptionAndThrow()
@@ -189,26 +211,33 @@ public static unsafe partial class JNI
     public static void DeleteLocalRef(JObject lref)
     {
         if (lref == null)
+        {
             return;
+        }
 
         if (!lref.Valid())
+        {
             return;
+        }
 
         Env->Functions->DeleteLocalRef(Env, lref.Handle);
-
     }
 
-    public static bool IsSameObject(JObject obj1, JObject obj2) => Convert.ToBoolean(Env->Functions->IsSameObject(Env, obj1.Handle, obj2.Handle));
+    public static bool IsSameObject(JObject obj1, JObject obj2)
+    {
+        return Convert.ToBoolean(Env->Functions->IsSameObject(Env, obj1.Handle, obj2.Handle));
+    }
 
     public static T NewLocalRef<T>(JObject obj) where T : JObject, new()
     {
         var res = Env->Functions->NewLocalRef(Env, obj.Handle);
-        return new T
-            { Handle = res, ReferenceType = ReferenceType.Local };
-
+        return new T { Handle = res, ReferenceType = ReferenceType.Local };
     }
 
-    public static int EnsureLocalCapacity(int capacity) => Env->Functions->EnsureLocalCapacity(Env, capacity);
+    public static int EnsureLocalCapacity(int capacity)
+    {
+        return Env->Functions->EnsureLocalCapacity(Env, capacity);
+    }
 
     public static T AllocObject<T>(JClass cls) where T : JObject, new()
     {
@@ -216,7 +245,6 @@ public static unsafe partial class JNI
 
         using JObject local = new () { Handle = res, ReferenceType = ReferenceType.Local };
         return NewGlobalRef<T>(local);
-
     }
 
     public static T NewObject<T>(JClass cls, JMethodID methodID, params JValue[] args) where T : JObject, new()
@@ -226,7 +254,6 @@ public static unsafe partial class JNI
         Console.WriteLine($"Res: {res}");
         JObject local = new () { Handle = res, ReferenceType = ReferenceType.Local };
         return NewGlobalRef<T>(local);
-
     }
 
     public static JClass GetObjectClass(JObject obj)
@@ -235,10 +262,12 @@ public static unsafe partial class JNI
 
         using JClass local = new () { Handle = res, ReferenceType = ReferenceType.Local };
         return NewGlobalRef<JClass>(local);
-
     }
 
-    public static bool IsInstanceOf(JObject obj, JClass cls) => Convert.ToBoolean(Env->Functions->IsInstanceOf(Env, obj.Handle, cls.Handle));
+    public static bool IsInstanceOf(JObject obj, JClass cls)
+    {
+        return Convert.ToBoolean(Env->Functions->IsInstanceOf(Env, obj.Handle, cls.Handle));
+    }
 
     public static JMethodID GetMethodID(JClass cls, string name, string sig)
     {
@@ -250,7 +279,6 @@ public static unsafe partial class JNI
         Marshal.FreeHGlobal(nameAnsi);
         Marshal.FreeHGlobal(sigAnsi);
         return id;
-
     }
 
     public static T CallObjectMethod<T>(JObject obj, JMethodID methodID, params JValue[] args) where T : JObject, new()
@@ -263,7 +291,6 @@ public static unsafe partial class JNI
             using JObject local = new () { Handle = res, ReferenceType = ReferenceType.Local };
             return NewGlobalRef<T>(local);
         }
-
     }
 
     public static T CallMethod<T>(JObject obj, JMethodID methodID, params JValue[] args)
@@ -272,38 +299,52 @@ public static unsafe partial class JNI
         var argsPtr = Marshal.UnsafeAddrOfPinnedArrayElement(args, 0);
 
         if (t == typeof(bool))
+        {
             return (T)(object)Convert.ToBoolean(Env->Functions->CallBooleanMethodA(Env, obj.Handle, methodID, argsPtr));
+        }
 
         if (t == typeof(sbyte))
+        {
             return (T)(object)Env->Functions->CallByteMethodA(Env, obj.Handle, methodID, argsPtr);
+        }
 
         if (t == typeof(char))
+        {
             return (T)(object)Env->Functions->CallCharMethodA(Env, obj.Handle, methodID, argsPtr);
+        }
 
         if (t == typeof(short))
+        {
             return (T)(object)Env->Functions->CallShortMethodA(Env, obj.Handle, methodID, argsPtr);
+        }
 
         if (t == typeof(int))
+        {
             return (T)(object)Env->Functions->CallIntMethodA(Env, obj.Handle, methodID, argsPtr);
+        }
 
         if (t == typeof(long))
+        {
             return (T)(object)Env->Functions->CallLongMethodA(Env, obj.Handle, methodID, argsPtr);
+        }
 
         if (t == typeof(float))
+        {
             return (T)(object)Env->Functions->CallFloatMethodA(Env, obj.Handle, methodID, argsPtr);
+        }
 
         if (t == typeof(double))
+        {
             return (T)(object)Env->Functions->CallDoubleMethodA(Env, obj.Handle, methodID, argsPtr);
+        }
 
         throw new ArgumentException($"CallMethod Type {t} not supported.");
-
     }
 
     public static void CallVoidMethod(JObject obj, JMethodID methodID, params JValue[] args)
     {
         var argsPtr = Marshal.UnsafeAddrOfPinnedArrayElement(args, 0);
         Env->Functions->CallVoidMethodA(Env, obj.Handle, methodID, argsPtr);
-
     }
 
     public static T CallNonvirtualObjectMethod<T>(JObject obj, JClass cls, JMethodID methodID, params JValue[] args) where T : JObject, new()
@@ -313,7 +354,6 @@ public static unsafe partial class JNI
 
         using JObject local = new () { Handle = res, ReferenceType = ReferenceType.Local };
         return NewGlobalRef<T>(local);
-
     }
 
     public static T CallNonvirtualMethod<T>(JObject obj, JClass cls, JMethodID methodID, params JValue[] args)
@@ -322,38 +362,52 @@ public static unsafe partial class JNI
         var argsPtr = Marshal.UnsafeAddrOfPinnedArrayElement(args, 0);
 
         if (t == typeof(bool))
+        {
             return (T)(object)Convert.ToBoolean(Env->Functions->CallNonvirtualBooleanMethodA(Env, obj.Handle, cls.Handle, methodID, argsPtr));
+        }
 
         if (t == typeof(sbyte))
+        {
             return (T)(object)Env->Functions->CallNonvirtualByteMethodA(Env, obj.Handle, cls.Handle, methodID, argsPtr);
+        }
 
         if (t == typeof(char))
+        {
             return (T)(object)Env->Functions->CallNonvirtualCharMethodA(Env, obj.Handle, cls.Handle, methodID, argsPtr);
+        }
 
         if (t == typeof(short))
+        {
             return (T)(object)Env->Functions->CallNonvirtualShortMethodA(Env, obj.Handle, cls.Handle, methodID, argsPtr);
+        }
 
         if (t == typeof(int))
+        {
             return (T)(object)Env->Functions->CallNonvirtualIntMethodA(Env, obj.Handle, cls.Handle, methodID, argsPtr);
+        }
 
         if (t == typeof(long))
+        {
             return (T)(object)Env->Functions->CallNonvirtualLongMethodA(Env, obj.Handle, cls.Handle, methodID, argsPtr);
+        }
 
         if (t == typeof(float))
+        {
             return (T)(object)Env->Functions->CallNonvirtualFloatMethodA(Env, obj.Handle, cls.Handle, methodID, argsPtr);
+        }
 
         if (t == typeof(double))
+        {
             return (T)(object)Env->Functions->CallNonvirtualDoubleMethodA(Env, obj.Handle, cls.Handle, methodID, argsPtr);
+        }
 
         throw new ArgumentException($"CallNonvirtualMethod Type {t} not supported.");
-
     }
 
     public static void CallNonvirtualVoidMethod(JObject obj, JClass cls, JMethodID methodID, params JValue[] args)
     {
         var argsPtr = Marshal.UnsafeAddrOfPinnedArrayElement(args, 0);
         Env->Functions->CallNonvirtualVoidMethodA(Env, obj.Handle, cls.Handle, methodID, argsPtr);
-
     }
 
     public static JFieldID GetFieldID(JClass cls, string name, string sig)
@@ -366,7 +420,6 @@ public static unsafe partial class JNI
         Marshal.FreeHGlobal(nameAnsi);
         Marshal.FreeHGlobal(sigAnsi);
         return id;
-
     }
 
     public static T GetObjectField<T>(JObject obj, JFieldID fieldID) where T : JObject, new()
@@ -374,7 +427,6 @@ public static unsafe partial class JNI
         var res = Env->Functions->GetObjectField(Env, obj.Handle, fieldID);
         using JObject local = new () { Handle = res, ReferenceType = ReferenceType.Local };
         return NewGlobalRef<T>(local);
-
     }
 
     public static T GetField<T>(JObject obj, JFieldID fieldID)
@@ -382,37 +434,51 @@ public static unsafe partial class JNI
         var t = typeof(T);
 
         if (t == typeof(bool))
+        {
             return (T)(object)Convert.ToBoolean(Env->Functions->GetBooleanField(Env, obj.Handle, fieldID));
+        }
 
         if (t == typeof(sbyte))
+        {
             return (T)(object)Env->Functions->GetByteField(Env, obj.Handle, fieldID);
+        }
 
         if (t == typeof(char))
+        {
             return (T)(object)Env->Functions->GetCharField(Env, obj.Handle, fieldID);
+        }
 
         if (t == typeof(short))
+        {
             return (T)(object)Env->Functions->GetShortField(Env, obj.Handle, fieldID);
+        }
 
         if (t == typeof(int))
+        {
             return (T)(object)Env->Functions->GetIntField(Env, obj.Handle, fieldID);
+        }
 
         if (t == typeof(long))
+        {
             return (T)(object)Env->Functions->GetLongField(Env, obj.Handle, fieldID);
+        }
 
         if (t == typeof(float))
+        {
             return (T)(object)Env->Functions->GetFloatField(Env, obj.Handle, fieldID);
+        }
 
         if (t == typeof(double))
+        {
             return (T)(object)Env->Functions->GetDoubleField(Env, obj.Handle, fieldID);
+        }
 
         throw new ArgumentException($"GetField Type {t} not supported.");
-
     }
 
     public static void SetObjectField(JObject obj, JFieldID fieldID, JObject val)
     {
         Env->Functions->SetObjectField(Env, obj.Handle, fieldID, val.Handle);
-
     }
 
     public static void SetField<T>(JObject obj, JFieldID fieldID, T value)
@@ -450,7 +516,6 @@ public static unsafe partial class JNI
             default:
                 throw new ArgumentException($"SetField Type {value?.GetType()} not supported.");
         }
-
     }
 
     public static JMethodID GetStaticMethodID(JClass cls, string name, string sig)
@@ -459,7 +524,6 @@ public static unsafe partial class JNI
         var sigAnsi = Marshal.StringToHGlobalAnsi(sig);
         JMethodID id = Env->Functions->GetStaticMethodID(Env, cls.Handle, nameAnsi, sigAnsi);
         return id;
-
     }
 
     public static T CallStaticObjectMethod<T>(JClass cls, JMethodID methodID, params JValue[] args) where T : JObject, new()
@@ -468,7 +532,6 @@ public static unsafe partial class JNI
         var res = Env->Functions->CallStaticObjectMethodA(Env, cls.Handle, methodID.Handle, argsPtr);
         using JObject local = new () { Handle = res, ReferenceType = ReferenceType.Local };
         return NewGlobalRef<T>(local);
-
     }
 
     public static T CallStaticMethod<T>(JClass cls, JMethodID methodID, params JValue[] args)
@@ -477,28 +540,44 @@ public static unsafe partial class JNI
         var argsPtr = Marshal.UnsafeAddrOfPinnedArrayElement(args, 0);
 
         if (t == typeof(bool))
+        {
             return (T)(object)Convert.ToBoolean(Env->Functions->CallStaticBooleanMethodA(Env, cls.Handle, methodID, argsPtr));
+        }
 
         if (t == typeof(sbyte))
+        {
             return (T)(object)Env->Functions->CallStaticByteMethodA(Env, cls.Handle, methodID, argsPtr);
+        }
 
         if (t == typeof(char))
+        {
             return (T)(object)Env->Functions->CallStaticCharMethodA(Env, cls.Handle, methodID, argsPtr);
+        }
 
         if (t == typeof(short))
+        {
             return (T)(object)Env->Functions->CallStaticShortMethodA(Env, cls.Handle, methodID, argsPtr);
+        }
 
         if (t == typeof(int))
+        {
             return (T)(object)Env->Functions->CallStaticIntMethodA(Env, cls.Handle, methodID, argsPtr);
+        }
 
         if (t == typeof(long))
+        {
             return (T)(object)Env->Functions->CallStaticLongMethodA(Env, cls.Handle, methodID, argsPtr);
+        }
 
         if (t == typeof(float))
+        {
             return (T)(object)Env->Functions->CallStaticFloatMethodA(Env, cls.Handle, methodID, argsPtr);
+        }
 
         if (t == typeof(double))
+        {
             return (T)(object)Env->Functions->CallStaticDoubleMethodA(Env, cls.Handle, methodID, argsPtr);
+        }
 
         throw new ArgumentException($"CallStaticMethod Type {t} not supported.");
     }
@@ -507,7 +586,6 @@ public static unsafe partial class JNI
     {
         var argsPtr = Marshal.UnsafeAddrOfPinnedArrayElement(args, 0);
         Env->Functions->CallStaticVoidMethodA(Env, cls.Handle, methodID, argsPtr);
-
     }
 
     public static JFieldID GetStaticFieldID(JClass cls, string name, string sig)
@@ -520,7 +598,6 @@ public static unsafe partial class JNI
         Marshal.FreeHGlobal(nameAnsi);
         Marshal.FreeHGlobal(sigAnsi);
         return id;
-
     }
 
     public static T GetStaticObjectField<T>(JClass cls, JFieldID fieldID) where T : JObject, new()
@@ -529,7 +606,6 @@ public static unsafe partial class JNI
 
         using JObject local = new () { Handle = res, ReferenceType = ReferenceType.Local };
         return NewGlobalRef<T>(local);
-
     }
 
     public static T GetStaticField<T>(JClass cls, JFieldID fieldID)
@@ -537,37 +613,51 @@ public static unsafe partial class JNI
         var t = typeof(T);
 
         if (t == typeof(bool))
+        {
             return (T)(object)Convert.ToBoolean(Env->Functions->GetStaticBooleanField(Env, cls.Handle, fieldID));
+        }
 
         if (t == typeof(sbyte))
+        {
             return (T)(object)Env->Functions->GetStaticByteField(Env, cls.Handle, fieldID);
+        }
 
         if (t == typeof(char))
+        {
             return (T)(object)Env->Functions->GetStaticCharField(Env, cls.Handle, fieldID);
+        }
 
         if (t == typeof(short))
+        {
             return (T)(object)Env->Functions->GetStaticShortField(Env, cls.Handle, fieldID);
+        }
 
         if (t == typeof(int))
+        {
             return (T)(object)Env->Functions->GetStaticIntField(Env, cls.Handle, fieldID);
+        }
 
         if (t == typeof(long))
+        {
             return (T)(object)Env->Functions->GetStaticLongField(Env, cls.Handle, fieldID);
+        }
 
         if (t == typeof(float))
+        {
             return (T)(object)Env->Functions->GetStaticFloatField(Env, cls.Handle, fieldID);
+        }
 
         if (t == typeof(double))
+        {
             return (T)(object)Env->Functions->GetStaticDoubleField(Env, cls.Handle, fieldID);
+        }
 
         throw new ArgumentException($"GetStaticField Type {t} not supported.");
-
     }
 
     public static void SetStaticObjectField<T>(JClass cls, JFieldID fieldID, T value) where T : JObject, new()
     {
         Env->Functions->SetStaticObjectField(Env, cls.Handle, fieldID, value.Handle);
-
     }
 
     public static void SetStaticField<T>(JClass cls, JFieldID fieldID, T value)
@@ -605,7 +695,6 @@ public static unsafe partial class JNI
             default:
                 throw new ArgumentException($"SetField Type {value.GetType()} not supported.");
         }
-
     }
 
     public static JString NewString(string str)
@@ -618,21 +707,24 @@ public static unsafe partial class JNI
 
         using JObject local = new () { Handle = res, ReferenceType = ReferenceType.Local };
         return NewGlobalRef<JString>(local);
-
     }
 
-    public static int GetStringLength(JString str) => Env->Functions->GetStringLength(Env, str.Handle);
+    public static int GetStringLength(JString str)
+    {
+        return Env->Functions->GetStringLength(Env, str.Handle);
+    }
 
     public static string GetJStringString(JString str)
     {
         if (!str.Valid())
+        {
             return "";
+        }
 
         var res = Env->Functions->GetStringChars(Env, str.Handle, out var isCopy);
         var resultString = Marshal.PtrToStringUni(res);
         Env->Functions->ReleaseStringChars(Env, str.Handle, res);
         return resultString ?? "";
-
     }
 
     private static void ReleaseStringChars(JString str, IntPtr chars)
@@ -640,9 +732,15 @@ public static unsafe partial class JNI
         throw new NotImplementedException();
     }
 
-    public static int GetArrayLength<T>(JArray<T> jarray) => Env->Functions->GetArrayLength(Env, jarray.Handle);
+    public static int GetArrayLength<T>(JArray<T> jarray)
+    {
+        return Env->Functions->GetArrayLength(Env, jarray.Handle);
+    }
 
-    public static int GetArrayLength<T>(JObjectArray<T> jarray) where T : JObject, new() => Env->Functions->GetArrayLength(Env, jarray.Handle);
+    public static int GetArrayLength<T>(JObjectArray<T> jarray) where T : JObject, new()
+    {
+        return Env->Functions->GetArrayLength(Env, jarray.Handle);
+    }
 
     public static T GetObjectArrayElement<T>(JObjectArray<T> array, int index) where T : JObject, new()
     {
@@ -650,13 +748,11 @@ public static unsafe partial class JNI
 
         using JObject local = new () { Handle = res, ReferenceType = ReferenceType.Local };
         return NewGlobalRef<T>(local);
-
     }
 
     public static void SetObjectArrayElement<T>(JObjectArray<T> array, int index, T value) where T : JObject, new()
     {
         Env->Functions->SetObjectArrayElement(Env, array.Handle, index, value.Handle);
-
     }
 
     public static JArray<T> NewArray<T>(int length)
@@ -665,27 +761,44 @@ public static unsafe partial class JNI
         IntPtr res;
 
         if (t == typeof(bool))
+        {
             res = Env->Functions->NewBooleanArray(Env, length);
+        }
         else if (t == typeof(sbyte))
+        {
             res = Env->Functions->NewByteArray(Env, length);
+        }
         else if (t == typeof(char))
+        {
             res = Env->Functions->NewCharArray(Env, length);
+        }
         else if (t == typeof(short))
+        {
             res = Env->Functions->NewShortArray(Env, length);
+        }
         else if (t == typeof(int))
+        {
             res = Env->Functions->NewIntArray(Env, length);
+        }
         else if (t == typeof(long))
+        {
             res = Env->Functions->NewBooleanArray(Env, length);
+        }
         else if (t == typeof(float))
+        {
             res = Env->Functions->NewBooleanArray(Env, length);
+        }
         else if (t == typeof(double))
+        {
             res = Env->Functions->NewBooleanArray(Env, length);
+        }
         else
+        {
             throw new ArgumentException($"CallStaticMethod Type {t} not supported.");
+        }
 
         using JObject local = new () { Handle = res, ReferenceType = ReferenceType.Local };
         return NewGlobalRef<JArray<T>>(local);
-
     }
 
     public static T[] GetArrayElements<T>(JArray<T> array)
@@ -700,7 +813,9 @@ public static unsafe partial class JNI
             var buf = new bool[length];
 
             for (var i = 0; i < length; i++)
+            {
                 buf[i] = Convert.ToBoolean(arr[i]);
+            }
 
             Env->Functions->ReleaseBooleanArrayElements(Env, array.Handle, arr, (int)ReleaseMode.Abort);
             return (T[])(object)buf;
@@ -713,7 +828,9 @@ public static unsafe partial class JNI
             var buf = new sbyte[length];
 
             for (var i = 0; i < length; i++)
+            {
                 buf[i] = arr[i];
+            }
 
             Env->Functions->ReleaseByteArrayElements(Env, array.Handle, arr, (int)ReleaseMode.Abort);
             return (T[])(object)buf;
@@ -726,7 +843,9 @@ public static unsafe partial class JNI
             var buf = new char[length];
 
             for (var i = 0; i < length; i++)
+            {
                 buf[i] = arr[i];
+            }
 
             Env->Functions->ReleaseCharArrayElements(Env, array.Handle, arr, (int)ReleaseMode.Abort);
             return (T[])(object)buf;
@@ -739,7 +858,9 @@ public static unsafe partial class JNI
             var buf = new short[length];
 
             for (var i = 0; i < length; i++)
+            {
                 buf[i] = arr[i];
+            }
 
             Env->Functions->ReleaseShortArrayElements(Env, array.Handle, arr, (int)ReleaseMode.Abort);
             return (T[])(object)buf;
@@ -752,7 +873,9 @@ public static unsafe partial class JNI
             var buf = new int[length];
 
             for (var i = 0; i < length; i++)
+            {
                 buf[i] = arr[i];
+            }
 
             Env->Functions->ReleaseIntArrayElements(Env, array.Handle, arr, (int)ReleaseMode.Abort);
             return (T[])(object)buf;
@@ -765,7 +888,9 @@ public static unsafe partial class JNI
             var buf = new long[length];
 
             for (var i = 0; i < length; i++)
+            {
                 buf[i] = arr[i];
+            }
 
             Env->Functions->ReleaseLongArrayElements(Env, array.Handle, arr, (int)ReleaseMode.Abort);
             return (T[])(object)buf;
@@ -778,7 +903,9 @@ public static unsafe partial class JNI
             var buf = new float[length];
 
             for (var i = 0; i < length; i++)
+            {
                 buf[i] = arr[i];
+            }
 
             Env->Functions->ReleaseFloatArrayElements(Env, array.Handle, arr, (int)ReleaseMode.Abort);
             return (T[])(object)buf;
@@ -791,14 +918,15 @@ public static unsafe partial class JNI
             var buf = new double[length];
 
             for (var i = 0; i < length; i++)
+            {
                 buf[i] = arr[i];
+            }
 
             Env->Functions->ReleaseDoubleArrayElements(Env, array.Handle, arr, (int)ReleaseMode.Abort);
             return (T[])(object)buf;
         }
 
         throw new ArgumentException($"GetArrayElements Type {t} not supported.");
-
     }
 
     public static T[] GetArrayRegion<T>(JArray<T> array, int start, int len)
@@ -806,6 +934,7 @@ public static unsafe partial class JNI
         var t = typeof(T);
 
         if (t == typeof(bool))
+        {
             fixed (byte* buf = new byte[len])
             {
                 Env->Functions->GetBooleanArrayRegion(Env, array.Handle, start, len, buf);
@@ -813,10 +942,13 @@ public static unsafe partial class JNI
                 var res = new bool[len];
 
                 for (var i = 0; i < len; i++)
+                {
                     res[i] = Convert.ToBoolean(buf[i]);
+                }
 
                 return (T[])(object)res;
             }
+        }
 
         if (t == typeof(sbyte))
         {
@@ -896,7 +1028,6 @@ public static unsafe partial class JNI
         }
 
         throw new ArgumentException($"GetArrayRegion Type {t} not supported.");
-
     }
 
     public static T GetArrayElement<T>(JArray<T> array, int index)
@@ -967,48 +1098,65 @@ public static unsafe partial class JNI
         var t = typeof(T);
 
         if (t == typeof(bool))
+        {
             fixed (byte* buf = elems.Select(b => Convert.ToByte(b)).ToArray())
             {
                 Env->Functions->SetBooleanArrayRegion(Env, array.Handle, start, len, null);
             }
+        }
         else if (t == typeof(sbyte))
+        {
             fixed (sbyte* buf = (sbyte[])(object)elems)
             {
                 Env->Functions->SetByteArrayRegion(Env, array.Handle, start, len, buf);
             }
+        }
         else if (t == typeof(char))
+        {
             fixed (char* buf = (char[])(object)elems)
             {
                 Env->Functions->SetCharArrayRegion(Env, array.Handle, start, len, buf);
             }
+        }
         else if (t == typeof(short))
+        {
             fixed (short* buf = (short[])(object)elems)
             {
                 Env->Functions->SetShortArrayRegion(Env, array.Handle, start, len, buf);
             }
+        }
         else if (t == typeof(int))
+        {
             fixed (int* buf = (int[])(object)elems)
             {
                 Env->Functions->SetIntArrayRegion(Env, array.Handle, start, len, buf);
             }
+        }
         else if (t == typeof(long))
+        {
             fixed (long* buf = (long[])(object)elems)
             {
                 Env->Functions->SetLongArrayRegion(Env, array.Handle, start, len, buf);
             }
+        }
         else if (t == typeof(float))
+        {
             fixed (float* buf = (float[])(object)elems)
             {
                 Env->Functions->SetFloatArrayRegion(Env, array.Handle, start, len, buf);
             }
+        }
         else if (t == typeof(double))
+        {
             fixed (double* buf = (double[])(object)elems)
             {
                 Env->Functions->SetDoubleArrayRegion(Env, array.Handle, start, len, buf);
             }
+        }
         else
+        {
             throw new ArgumentException($"SetArrayRegion Type {t} not supported.");
-
+        }
     }
 
     public static void SetArrayElement<T>(JArray<T> array, int index, T value)
@@ -1061,15 +1209,30 @@ public static unsafe partial class JNI
         }
     }
 
-    private static int RegisterNatives(JClass cls, IntPtr methods, int nmethods) => throw new NotImplementedException();
+    private static int RegisterNatives(JClass cls, IntPtr methods, int nmethods)
+    {
+        throw new NotImplementedException();
+    }
 
-    private static int UnregisterNatives(JClass cls) => throw new NotImplementedException();
+    private static int UnregisterNatives(JClass cls)
+    {
+        throw new NotImplementedException();
+    }
 
-    public static int MonitorEnter(JObject obj) => Env->Functions->MonitorEnter(Env, obj.Handle);
+    public static int MonitorEnter(JObject obj)
+    {
+        return Env->Functions->MonitorEnter(Env, obj.Handle);
+    }
 
-    public static int MonitorExit(JObject obj) => Env->Functions->MonitorExit(Env, obj.Handle);
+    public static int MonitorExit(JObject obj)
+    {
+        return Env->Functions->MonitorExit(Env, obj.Handle);
+    }
 
-    private static JavaVM* GetJavaVM() => throw new NotImplementedException();
+    private static JavaVM* GetJavaVM()
+    {
+        throw new NotImplementedException();
+    }
 
     public static string? GetStringRegion(JString str, int start, int len)
     {
@@ -1078,20 +1241,27 @@ public static unsafe partial class JNI
         Env->Functions->GetStringRegion(Env, str.Handle, start, len, buf);
 
         if (buf != IntPtr.Zero)
+        {
             return Marshal.PtrToStringUni(buf);
+        }
 
         return null;
-
     }
 
-    private static IntPtr GetPrimitiveArrayCritical<T>(JArray<T> array) => throw new NotImplementedException();
+    private static IntPtr GetPrimitiveArrayCritical<T>(JArray<T> array)
+    {
+        throw new NotImplementedException();
+    }
 
     private static void ReleasePrimitiveArrayCritical<T>(JArray<T> array, IntPtr carray, int mode)
     {
         throw new NotImplementedException();
     }
 
-    private static string GetStringCritical(JString str) => throw new NotImplementedException();
+    private static string GetStringCritical(JString str)
+    {
+        throw new NotImplementedException();
+    }
 
     private static void ReleaseStringCritical(JString str)
     {
@@ -1101,22 +1271,31 @@ public static unsafe partial class JNI
     public static T NewWeakGlobalRef<T>(JObject obj) where T : JObject, new()
     {
         var res = Env->Functions->NewWeakGlobalRef(Env, obj.Handle);
-        return new T
-            { Handle = res, ReferenceType = ReferenceType.WeakGlobal };
-
+        return new T { Handle = res, ReferenceType = ReferenceType.WeakGlobal };
     }
 
     public static void DeleteWeakGlobalRef(JObject obj)
     {
         Env->Functions->DeleteWeakGlobalRef(Env, obj.Handle);
-
     }
 
-    public static bool ExceptionCheck() => Convert.ToBoolean(Env->Functions->ExceptionCheck(Env));
+    public static bool ExceptionCheck()
+    {
+        return Convert.ToBoolean(Env->Functions->ExceptionCheck(Env));
+    }
 
-    private static JObject NewDirectByteBuffer(IntPtr address, int capacity) => throw new NotImplementedException();
+    private static JObject NewDirectByteBuffer(IntPtr address, int capacity)
+    {
+        throw new NotImplementedException();
+    }
 
-    private static IntPtr GetDirectBufferAddress(JObject buf) => throw new NotImplementedException();
+    private static IntPtr GetDirectBufferAddress(JObject buf)
+    {
+        throw new NotImplementedException();
+    }
 
-    private static int GetDirectBufferCapacity(JObject obj) => throw new NotImplementedException();
+    private static int GetDirectBufferCapacity(JObject obj)
+    {
+        throw new NotImplementedException();
+    }
 }

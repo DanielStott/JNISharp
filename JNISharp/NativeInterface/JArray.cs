@@ -24,10 +24,18 @@ public record JArray<T> : JObject, IEnumerable<T>
     public IEnumerator<T> GetEnumerator()
     {
         for (var i = 0; i < Length; i++)
+        {
             yield return JNI.GetArrayElement(this, i);
+        }
     }
 
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
 
-    public T[] GetElements() => JNI.GetArrayElements(this);
+    public T[] GetElements()
+    {
+        return JNI.GetArrayElements(this);
+    }
 }

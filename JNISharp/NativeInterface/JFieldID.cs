@@ -9,9 +9,18 @@ public readonly struct JFieldID : IEquatable<JFieldID>
         Handle = handle;
     }
 
-    public static implicit operator IntPtr(JFieldID fieldID) => fieldID.Handle;
+    public static implicit operator IntPtr(JFieldID fieldID)
+    {
+        return fieldID.Handle;
+    }
 
-    public static implicit operator JFieldID(IntPtr pointer) => new (pointer);
+    public static implicit operator JFieldID(IntPtr pointer)
+    {
+        return new JFieldID(pointer);
+    }
 
-    public bool Equals(JFieldID other) => Handle == other.Handle;
+    public bool Equals(JFieldID other)
+    {
+        return Handle == other.Handle;
+    }
 }

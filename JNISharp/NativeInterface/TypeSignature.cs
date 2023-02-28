@@ -7,28 +7,44 @@ public static partial class JNI
         var t = typeof(T);
 
         if (t == typeof(bool))
+        {
             return TypeSignature.Bool;
+        }
 
         if (t == typeof(sbyte))
+        {
             return TypeSignature.Byte;
+        }
 
         if (t == typeof(char))
+        {
             return TypeSignature.Char;
+        }
 
         if (t == typeof(short))
+        {
             return TypeSignature.Short;
+        }
 
         if (t == typeof(int))
+        {
             return TypeSignature.Int;
+        }
 
         if (t == typeof(long))
+        {
             return TypeSignature.Long;
+        }
 
         if (t == typeof(float))
+        {
             return TypeSignature.Float;
+        }
 
         if (t == typeof(double))
+        {
             return TypeSignature.Double;
+        }
 
         throw new ArgumentException($"GetTypeSignature Type {t} not supported.");
     }

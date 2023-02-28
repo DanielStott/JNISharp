@@ -127,21 +127,48 @@ public readonly struct JValue
         }
     }
 
-    public static implicit operator JValue(bool b) => new (b);
+    public static implicit operator JValue(bool b)
+    {
+        return new JValue(b);
+    }
 
-    public static implicit operator JValue(sbyte b) => new (b);
+    public static implicit operator JValue(sbyte b)
+    {
+        return new JValue(b);
+    }
 
-    public static implicit operator JValue(char c) => new (c);
+    public static implicit operator JValue(char c)
+    {
+        return new JValue(c);
+    }
 
-    public static implicit operator JValue(short s) => new (s);
+    public static implicit operator JValue(short s)
+    {
+        return new JValue(s);
+    }
 
-    public static implicit operator JValue(int i) => new (i);
+    public static implicit operator JValue(int i)
+    {
+        return new JValue(i);
+    }
 
-    public static implicit operator JValue(long j) => new (j);
+    public static implicit operator JValue(long j)
+    {
+        return new JValue(j);
+    }
 
-    public static implicit operator JValue(float f) => new (f);
+    public static implicit operator JValue(float f)
+    {
+        return new JValue(f);
+    }
 
-    public static implicit operator JValue(double d) => new (d);
+    public static implicit operator JValue(double d)
+    {
+        return new JValue(d);
+    }
 
-    public static implicit operator JValue(JObject obj) => new (obj);
+    public static implicit operator JValue(JObject obj)
+    {
+        return new JValue(obj);
+    }
 }

@@ -35,7 +35,9 @@ public record JObject : IDisposable
     protected virtual void Dispose(bool disposing)
     {
         if (Disposed || Handle == IntPtr.Zero)
+        {
             return;
+        }
 
         switch (ReferenceType)
         {
@@ -55,7 +57,10 @@ public record JObject : IDisposable
         Disposed = true;
     }
 
-    public bool Valid() => Handle != IntPtr.Zero;
+    public bool Valid()
+    {
+        return Handle != IntPtr.Zero;
+    }
 
     ~JObject()
     {

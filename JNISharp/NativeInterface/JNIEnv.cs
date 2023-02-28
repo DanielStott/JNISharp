@@ -7,7 +7,7 @@ namespace JNISharp.NativeInterface;
 ///     all the JNI functions.
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-internal unsafe readonly struct JNIEnv
+internal readonly unsafe struct JNIEnv
 {
     [StructLayout(LayoutKind.Sequential)]
     internal readonly struct FunctionTable

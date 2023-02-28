@@ -18,7 +18,9 @@ internal class JVMTIArray<T> : IDisposable, IEnumerable<T>
                 var buffer = new JMethodID[length];
 
                 for (var i = 0; i < length; i++)
+                {
                     buffer[i] = arr[i];
+                }
 
                 Elements = (T[])(object)buffer;
             }
@@ -27,7 +29,9 @@ internal class JVMTIArray<T> : IDisposable, IEnumerable<T>
                 var buffer = new JFieldID[length];
 
                 for (var i = 0; i < length; i++)
+                {
                     buffer[i] = arr[i];
+                }
 
                 Elements = (T[])(object)buffer;
             }
@@ -36,8 +40,9 @@ internal class JVMTIArray<T> : IDisposable, IEnumerable<T>
                 var buffer = new JClass[length];
 
                 for (var i = 0; i < length; i++)
-                    buffer[i] = new JClass
-                        { Handle = arr[i], ReferenceType = JNI.ReferenceType.Local };
+                {
+                    buffer[i] = new JClass { Handle = arr[i], ReferenceType = JNI.ReferenceType.Local };
+                }
 
                 Elements = (T[])(object)buffer;
             }
@@ -56,17 +61,24 @@ internal class JVMTIArray<T> : IDisposable, IEnumerable<T>
         GC.SuppressFinalize(this);
     }
 
-    public IEnumerator<T> GetEnumerator() =>
+    public IEnumerator<T> GetEnumerator()
+    {
         //for (int i = 0; i < this.Elements.Length; i++)
         //yield return this.Elements[i];
-        ((IEnumerable<T>)Elements).GetEnumerator();
+        return ((IEnumerable<T>)Elements).GetEnumerator();
+    }
 
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
 
     protected virtual void Dispose(bool disposing)
     {
         if (Disposed)
+        {
             return;
+        }
 
         JVMTI.Deallocate(Handle);
 

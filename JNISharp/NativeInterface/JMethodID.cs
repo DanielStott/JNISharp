@@ -9,9 +9,18 @@ public readonly struct JMethodID : IEquatable<JMethodID>
         Handle = handle;
     }
 
-    public static implicit operator IntPtr(JMethodID methodID) => methodID.Handle;
+    public static implicit operator IntPtr(JMethodID methodID)
+    {
+        return methodID.Handle;
+    }
 
-    public static implicit operator JMethodID(IntPtr pointer) => new (pointer);
+    public static implicit operator JMethodID(IntPtr pointer)
+    {
+        return new JMethodID(pointer);
+    }
 
-    public bool Equals(JMethodID other) => Handle == other.Handle;
+    public bool Equals(JMethodID other)
+    {
+        return Handle == other.Handle;
+    }
 }

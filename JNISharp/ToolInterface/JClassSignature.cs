@@ -25,7 +25,13 @@ public class JClassSignature
     [JsonInclude]
     public IEnumerable<JMethodSignature> MethodSignatures { get; init; }
 
-    public string ToJson() => JsonSerializer.Serialize(this);
+    public string ToJson()
+    {
+        return JsonSerializer.Serialize(this);
+    }
 
-    public string ToJson(JsonSerializerOptions options) => JsonSerializer.Serialize(this, options);
+    public string ToJson(JsonSerializerOptions options)
+    {
+        return JsonSerializer.Serialize(this, options);
+    }
 }

@@ -2,5 +2,8 @@
 
 public record JString : JObject
 {
-    public string GetString() => JNI.GetJStringString(this);
+    public string GetString()
+    {
+        return JNI.GetJStringString(this);
+    }
 }

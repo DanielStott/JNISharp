@@ -15,10 +15,15 @@ public record JObjectArray<T> : JObject, IEnumerable<T> where T : JObject, new()
     public IEnumerator<T> GetEnumerator()
     {
         for (var i = 0; i < Length; i++)
+        {
             yield return JNI.GetObjectArrayElement(this, i);
+        }
     }
 
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
 
     public void SetElement(T value, int index)
     {

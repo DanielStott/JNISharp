@@ -3,7 +3,7 @@
 namespace JNISharp.ToolInterface;
 
 [StructLayout(LayoutKind.Sequential)]
-internal unsafe readonly struct JVMTIEnv
+internal readonly unsafe struct JVMTIEnv
 {
     [StructLayout(LayoutKind.Sequential)]
     internal readonly struct FunctionTable
