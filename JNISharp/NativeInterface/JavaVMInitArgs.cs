@@ -1,6 +1,6 @@
-﻿namespace JNISharp.NativeInterface;
+﻿using System.Runtime.InteropServices;
 
-using System.Runtime.InteropServices;
+namespace JNISharp.NativeInterface;
 
 [StructLayout(LayoutKind.Sequential)]
 public unsafe struct JavaVMInitArgs
@@ -15,9 +15,9 @@ public unsafe struct JavaVMInitArgs
 
     public JavaVMInitArgs(JNI.Version version, JavaVMOption[] options, bool ignoreUnrecognized)
     {
-        this.Version = (int)version;
-        this.OptionsCount = options.Length;
-        this.Options = (JavaVMOption*)Marshal.UnsafeAddrOfPinnedArrayElement(options, 0);
-        this.IgnoreUnrecognized = ignoreUnrecognized;
+        Version = (int)version;
+        OptionsCount = options.Length;
+        Options = (JavaVMOption*)Marshal.UnsafeAddrOfPinnedArrayElement(options, 0);
+        IgnoreUnrecognized = ignoreUnrecognized;
     }
 }

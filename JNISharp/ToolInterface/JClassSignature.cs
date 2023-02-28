@@ -1,10 +1,18 @@
-﻿namespace JNISharp.ToolInterface;
-
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.Json.Serialization;
+
+namespace JNISharp.ToolInterface;
 
 public class JClassSignature
 {
+    public JClassSignature(string signature, string generic, IEnumerable<JFieldSignature> fieldSignatures, IEnumerable<JMethodSignature> methodSignatures)
+    {
+        Signature = signature;
+        Generic = generic;
+        FieldSignatures = fieldSignatures;
+        MethodSignatures = methodSignatures;
+    }
+
     [JsonInclude]
     public string Signature { get; init; }
 
@@ -17,21 +25,7 @@ public class JClassSignature
     [JsonInclude]
     public IEnumerable<JMethodSignature> MethodSignatures { get; init; }
 
-    public JClassSignature(string signature, string generic, IEnumerable<JFieldSignature> fieldSignatures, IEnumerable<JMethodSignature> methodSignatures)
-    {
-        this.Signature = signature;
-        this.Generic = generic;
-        this.FieldSignatures = fieldSignatures;
-        this.MethodSignatures = methodSignatures;
-    }
+    public string ToJson() => JsonSerializer.Serialize(this);
 
-    public string ToJson()
-    {
-        return JsonSerializer.Serialize(this);
-    }
-
-    public string ToJson(JsonSerializerOptions options)
-    {
-        return JsonSerializer.Serialize(this, options);
-    }
+    public string ToJson(JsonSerializerOptions options) => JsonSerializer.Serialize(this, options);
 }

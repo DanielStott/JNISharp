@@ -2,12 +2,6 @@
 
 public record JObject : IDisposable
 {
-    private bool Disposed { get; set; }
-
-    public IntPtr Handle { get; init; }
-
-    internal JNI.ReferenceType ReferenceType { get; init; }
-
     public JObject()
     {
     }
@@ -24,6 +18,18 @@ public record JObject : IDisposable
         ReferenceType = obj.ReferenceType;
         Disposed = obj.Disposed;
         obj.Disposed = true;
+    }
+
+    private bool Disposed { get; set; }
+
+    public IntPtr Handle { get; init; }
+
+    internal JNI.ReferenceType ReferenceType { get; init; }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
     }
 
     protected virtual void Dispose(bool disposing)
@@ -49,22 +55,13 @@ public record JObject : IDisposable
         Disposed = true;
     }
 
-    public bool Valid()
-    {
-        return Handle != IntPtr.Zero;
-    }
+    public bool Valid() => Handle != IntPtr.Zero;
 
     ~JObject()
     {
-        Dispose(disposing: false);
+        Dispose(false);
     }
 
-    public void Dispose()
-    {
-        Dispose(disposing: true);
-        GC.SuppressFinalize(this);
-    }
-    
     public override string ToString()
     {
         var methodId = JNI.GetObjectClass(this).GetMethodID("toString", "()Ljava/lang/String;");

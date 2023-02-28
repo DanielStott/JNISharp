@@ -1,6 +1,6 @@
-﻿namespace JNISharp.NativeInterface;
+﻿using System.Runtime.InteropServices;
 
-using System.Runtime.InteropServices;
+namespace JNISharp.NativeInterface;
 
 [StructLayout(LayoutKind.Explicit, Size = 8)]
 public readonly struct JValue
@@ -80,7 +80,7 @@ public readonly struct JValue
     public JValue(JObject obj)
     {
         this = new JValue();
-        this.L = obj.Handle;
+        L = obj.Handle;
     }
 
     public JValue(object value)
@@ -90,58 +90,58 @@ public readonly struct JValue
         switch (value)
         {
             case bool z:
-                this.Z = Convert.ToByte(z);
+                Z = Convert.ToByte(z);
                 break;
 
             case sbyte b:
-                this.B = b;
+                B = b;
                 break;
 
             case char c:
-                this.C = c;
+                C = c;
                 break;
 
             case short s:
-                this.S = s;
+                S = s;
                 break;
 
             case int i:
-                this.I = i;
+                I = i;
                 break;
 
             case long j:
-                this.J = j;
+                J = j;
                 break;
 
             case float f:
-                this.F = f;
+                F = f;
                 break;
 
             case double d:
-                this.D = d;
+                D = d;
                 break;
 
             case JObject obj:
-                this.L = obj.Handle;
+                L = obj.Handle;
                 break;
         }
     }
 
-    public static implicit operator JValue(bool b) => new JValue(b);
+    public static implicit operator JValue(bool b) => new (b);
 
-    public static implicit operator JValue(sbyte b) => new JValue(b);
+    public static implicit operator JValue(sbyte b) => new (b);
 
-    public static implicit operator JValue(char c) => new JValue(c);
+    public static implicit operator JValue(char c) => new (c);
 
-    public static implicit operator JValue(short s) => new JValue(s);
+    public static implicit operator JValue(short s) => new (s);
 
-    public static implicit operator JValue(int i) => new JValue(i);
+    public static implicit operator JValue(int i) => new (i);
 
-    public static implicit operator JValue(long j) => new JValue(j);
+    public static implicit operator JValue(long j) => new (j);
 
-    public static implicit operator JValue(float f) => new JValue(f);
+    public static implicit operator JValue(float f) => new (f);
 
-    public static implicit operator JValue(double d) => new JValue(d);
+    public static implicit operator JValue(double d) => new (d);
 
-    public static implicit operator JValue(JObject obj) => new JValue(obj);
+    public static implicit operator JValue(JObject obj) => new (obj);
 }

@@ -1,16 +1,16 @@
-﻿namespace JNISharp.NativeInterface;
+﻿using System.Runtime.InteropServices;
 
-using System.Runtime.InteropServices;
+namespace JNISharp.NativeInterface;
 
 /// <summary>
-/// Represents a JNIEnv C struct, the FunctionTable contains
-/// all the JNI functions.
+///     Represents a JNIEnv C struct, the FunctionTable contains
+///     all the JNI functions.
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-internal readonly unsafe struct JNIEnv
+internal unsafe readonly struct JNIEnv
 {
     [StructLayout(LayoutKind.Sequential)]
-    internal readonly unsafe struct FunctionTable
+    internal readonly struct FunctionTable
     {
         internal readonly IntPtr Reserved0;
 

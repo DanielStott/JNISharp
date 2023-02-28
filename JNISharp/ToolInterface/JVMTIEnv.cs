@@ -1,9 +1,9 @@
-﻿namespace JNISharp.ToolInterface;
+﻿using System.Runtime.InteropServices;
 
-using System.Runtime.InteropServices;
+namespace JNISharp.ToolInterface;
 
 [StructLayout(LayoutKind.Sequential)]
-internal readonly unsafe struct JVMTIEnv
+internal unsafe readonly struct JVMTIEnv
 {
     [StructLayout(LayoutKind.Sequential)]
     internal readonly struct FunctionTable

@@ -1,50 +1,43 @@
-﻿namespace JNISharp.ToolInterface;
-
+﻿using System.Runtime.InteropServices;
 using JNISharp.NativeInterface;
-using System.Runtime.InteropServices;
 
-public unsafe static partial class JVMTI
+namespace JNISharp.ToolInterface;
+
+public static unsafe partial class JVMTI
 {
     internal static JVMTIEnv* Env;
-
-    internal static Dictionary<string, JClass> LoadedClassCache { get; set; } = new ();
 
     static JVMTI()
     {
         if (Env == null)
         {
-            unsafe
-            {
-                var err = JNI.VM->Functions->GetEnv(JNI.VM, out IntPtr env, (int)JVMTI.Version.V1);
+            var err = JNI.VM->Functions->GetEnv(JNI.VM, out var env, (int)Version.V1);
 
-                if (err != JNI.Result.Ok)
-                    throw new Exception("Failed to initialize JVMTI");
+            if (err != JNI.Result.Ok)
+                throw new Exception("Failed to initialize JVMTI");
 
-                if (env == IntPtr.Zero)
-                    throw new Exception($"Failed to initialize JVMTI");
+            if (env == IntPtr.Zero)
+                throw new Exception("Failed to initialize JVMTI");
 
-                Env = (JVMTIEnv*)env;
-            }
+            Env = (JVMTIEnv*)env;
         }
     }
 
+    internal static Dictionary<string, JClass> LoadedClassCache { get; set; } = new ();
+
     public static JClass GetLoadedClass(string sig)
     {
-        if (LoadedClassCache.TryGetValue(sig, out JClass found))
-        {
+        if (LoadedClassCache.TryGetValue(sig, out var found))
             return found;
-        }
-        else
-        {
-            foreach (JClass cls in GetLoadedClasses())
-            {
-                if (GetClassSignature(cls).Item1 == sig)
-                {
-                    JClass global = JNI.NewGlobalRef<JClass>(cls);
 
-                    LoadedClassCache.Add(sig, global);
-                    return global;
-                }
+        foreach (var cls in GetLoadedClasses())
+        {
+            if (GetClassSignature(cls).Item1 == sig)
+            {
+                var global = JNI.NewGlobalRef<JClass>(cls);
+
+                LoadedClassCache.Add(sig, global);
+                return global;
             }
         }
 
@@ -53,22 +46,20 @@ public unsafe static partial class JVMTI
 
     public static IEnumerable<JClass> GetLoadedClasses()
     {
-        unsafe
-        {
-            var err = Env->Functions->GetLoadedClasses(Env, out int length, out IntPtr arrayHandle);
+        var err = Env->Functions->GetLoadedClasses(Env, out var length, out var arrayHandle);
 
-            if (err != JVMTI.Error.None)
-                throw new JVMTIErrorException(err);
+        if (err != Error.None)
+            throw new JVMTIErrorException(err);
 
-            return new JVMTIArray<JClass>(arrayHandle, length);
-        }
+        return new JVMTIArray<JClass>(arrayHandle, length);
+
     }
 
     public static Tuple<string, string> GetClassSignature(JClass cls)
     {
-        var err = Env->Functions->GetClassSignature(Env, cls.Handle, out IntPtr sigPtr, out IntPtr genericPtr);
+        var err = Env->Functions->GetClassSignature(Env, cls.Handle, out var sigPtr, out var genericPtr);
 
-        if (err != JVMTI.Error.None && err != JVMTI.Error.ClassNotPrepared)
+        if (err != Error.None && err != Error.ClassNotPrepared)
             throw new JVMTIErrorException(err);
 
         string sigString = null;
@@ -79,9 +70,7 @@ public unsafe static partial class JVMTI
             sigString = Marshal.PtrToStringAnsi(sigPtr);
 
             if (genericPtr != IntPtr.Zero)
-            {
                 genericString = Marshal.PtrToStringAnsi(genericPtr);
-            }
         }
 
         Deallocate(sigPtr);
@@ -92,144 +81,128 @@ public unsafe static partial class JVMTI
 
     public static JClassSignature GetSignature(this JClass cls)
     {
-        unsafe
+        var err = Env->Functions->GetClassSignature(Env, cls.Handle, out var sigPtr, out var genericPtr);
+
+        if (err != Error.None && err != Error.ClassNotPrepared)
+            throw new JVMTIErrorException(err);
+
+        string sigString = null;
+        string genericString = null;
+
+        if (sigPtr != IntPtr.Zero)
         {
-            var err = Env->Functions->GetClassSignature(Env, cls.Handle, out IntPtr sigPtr, out IntPtr genericPtr);
+            sigString = Marshal.PtrToStringAnsi(sigPtr);
 
-            if (err != JVMTI.Error.None && err != JVMTI.Error.ClassNotPrepared)
-                throw new JVMTIErrorException(err);
-
-            string sigString = null;
-            string genericString = null;
-
-            if (sigPtr != IntPtr.Zero)
-            {
-                sigString = Marshal.PtrToStringAnsi(sigPtr);
-
-                if (genericPtr != IntPtr.Zero)
-                {
-                    genericString = Marshal.PtrToStringAnsi(genericPtr);
-                }
-            }
-
-            Deallocate(sigPtr);
-            Deallocate(genericPtr);
-
-            return new JClassSignature(
-                sigString,
-                genericString,
-                cls.GetFields().Select(f => f.GetSignature(cls)),
-                cls.GetMethods().Select(m => m.GetSignature()));
+            if (genericPtr != IntPtr.Zero)
+                genericString = Marshal.PtrToStringAnsi(genericPtr);
         }
+
+        Deallocate(sigPtr);
+        Deallocate(genericPtr);
+
+        return new JClassSignature(
+            sigString,
+            genericString,
+            cls.GetFields().Select(f => f.GetSignature(cls)),
+            cls.GetMethods().Select(m => m.GetSignature()));
+
     }
 
     public static IEnumerable<JMethodID> GetMethods(this JClass cls)
     {
-        unsafe
-        {
-            var err = Env->Functions->GetClassMethods(Env, cls.Handle, out int length, out IntPtr handle);
-            if (err != JVMTI.Error.None && err != JVMTI.Error.ClassNotPrepared)
-                throw new JVMTIErrorException(err);
+        var err = Env->Functions->GetClassMethods(Env, cls.Handle, out var length, out var handle);
+        if (err != Error.None && err != Error.ClassNotPrepared)
+            throw new JVMTIErrorException(err);
 
-            return new JVMTIArray<JMethodID>(handle, length);
-        }
+        return new JVMTIArray<JMethodID>(handle, length);
+
     }
 
     public static IEnumerable<JFieldID> GetFields(this JClass cls)
     {
-        unsafe
-        {
-            var err = Env->Functions->GetClassFields(Env, cls.Handle, out int length, out IntPtr handle);
-            if (err != JVMTI.Error.None && err != JVMTI.Error.ClassNotPrepared)
-                throw new JVMTIErrorException(err);
+        var err = Env->Functions->GetClassFields(Env, cls.Handle, out var length, out var handle);
+        if (err != Error.None && err != Error.ClassNotPrepared)
+            throw new JVMTIErrorException(err);
 
-            return new JVMTIArray<JFieldID>(handle, length);
-        }
+        return new JVMTIArray<JFieldID>(handle, length);
+
     }
 
     public static JMethodSignature GetSignature(this JMethodID methodID)
     {
-        unsafe
+        var err = Env->Functions->GetMethodName(Env, methodID, out var namePtr, out var sigPtr, out var genericPtr);
+        if (err != Error.None && err != Error.ClassNotPrepared)
+            throw new JVMTIErrorException(err);
+
+        string name = null;
+        string sig = null;
+        string generic = null;
+
+        if (namePtr != IntPtr.Zero)
         {
-            var err = Env->Functions->GetMethodName(Env, methodID, out IntPtr namePtr, out IntPtr sigPtr, out IntPtr genericPtr);
-            if (err != JVMTI.Error.None && err != JVMTI.Error.ClassNotPrepared)
-                throw new JVMTIErrorException(err);
+            name = Marshal.PtrToStringAnsi(namePtr);
 
-            string name = null;
-            string sig = null;
-            string generic = null;
-
-            if (namePtr != IntPtr.Zero)
+            if (sigPtr != IntPtr.Zero)
             {
-                name = Marshal.PtrToStringAnsi(namePtr);
+                sig = Marshal.PtrToStringAnsi(sigPtr);
 
-                if (sigPtr != IntPtr.Zero)
-                {
-                    sig = Marshal.PtrToStringAnsi(sigPtr);
-
-                    if (genericPtr != IntPtr.Zero)
-                    {
-                        generic = Marshal.PtrToStringAnsi(genericPtr);
-                    }
-                }
+                if (genericPtr != IntPtr.Zero)
+                    generic = Marshal.PtrToStringAnsi(genericPtr);
             }
-
-            Deallocate(namePtr);
-            Deallocate(sigPtr);
-            Deallocate(genericPtr);
-
-            err = Env->Functions->GetMethodModifiers(Env, methodID, out int modifier);
-            if (err != JVMTI.Error.None)
-                throw new Exception($"Failed to get JMethodID modifier. Error: {err}");
-
-
-            return new JMethodSignature(name, sig, generic, (JMethodAccessFlags)modifier);
         }
+
+        Deallocate(namePtr);
+        Deallocate(sigPtr);
+        Deallocate(genericPtr);
+
+        err = Env->Functions->GetMethodModifiers(Env, methodID, out var modifier);
+        if (err != Error.None)
+            throw new Exception($"Failed to get JMethodID modifier. Error: {err}");
+
+
+        return new JMethodSignature(name, sig, generic, (JMethodAccessFlags)modifier);
+
     }
 
     public static JFieldSignature GetSignature(this JFieldID fieldID, JClass cls)
     {
-        unsafe
+        var err = Env->Functions->GetFieldName(Env, cls.Handle, fieldID, out var namePtr, out var sigPtr, out var genericPtr);
+        if (err != Error.None && err != Error.ClassNotPrepared)
+            throw new JVMTIErrorException(err);
+
+        string name = null;
+        string sig = null;
+        string generic = null;
+
+        if (namePtr != IntPtr.Zero)
         {
-            var err = Env->Functions->GetFieldName(Env, cls.Handle, fieldID, out IntPtr namePtr, out IntPtr sigPtr, out IntPtr genericPtr);
-            if (err != JVMTI.Error.None && err != JVMTI.Error.ClassNotPrepared)
-                throw new JVMTIErrorException(err);
+            name = Marshal.PtrToStringAnsi(namePtr);
+            Deallocate(namePtr);
 
-            string name = null;
-            string sig = null;
-            string generic = null;
-
-            if (namePtr != IntPtr.Zero)
+            if (sigPtr != IntPtr.Zero)
             {
-                name = Marshal.PtrToStringAnsi(namePtr);
-                Deallocate(namePtr);
+                sig = Marshal.PtrToStringAnsi(sigPtr);
+                Deallocate(sigPtr);
 
-                if (sigPtr != IntPtr.Zero)
+                if (genericPtr != IntPtr.Zero)
                 {
-                    sig = Marshal.PtrToStringAnsi(sigPtr);
-                    Deallocate(sigPtr);
-
-                    if (genericPtr != IntPtr.Zero)
-                    {
-                        generic = Marshal.PtrToStringAnsi(genericPtr);
-                        Deallocate(genericPtr);
-                    }
+                    generic = Marshal.PtrToStringAnsi(genericPtr);
+                    Deallocate(genericPtr);
                 }
             }
-
-            err = Env->Functions->GetFieldModifiers(Env, cls.Handle, fieldID, out int flags);
-            if (err != JVMTI.Error.None && err != JVMTI.Error.ClassNotPrepared)
-                throw new JVMTIErrorException(err);
-
-            return new JFieldSignature(null, sig, generic, (JFieldAccessFlags)flags);
         }
+
+        err = Env->Functions->GetFieldModifiers(Env, cls.Handle, fieldID, out var flags);
+        if (err != Error.None && err != Error.ClassNotPrepared)
+            throw new JVMTIErrorException(err);
+
+        return new JFieldSignature(null, sig, generic, (JFieldAccessFlags)flags);
+
     }
 
     public static void Deallocate(IntPtr address)
     {
-        unsafe
-        {
-            Env->Functions->Deallocate(Env, address);
-        }
+        Env->Functions->Deallocate(Env, address);
+
     }
 }

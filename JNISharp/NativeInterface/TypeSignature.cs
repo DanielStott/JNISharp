@@ -2,6 +2,37 @@
 
 public static partial class JNI
 {
+    public static string GetTypeSignature<T>()
+    {
+        var t = typeof(T);
+
+        if (t == typeof(bool))
+            return TypeSignature.Bool;
+
+        if (t == typeof(sbyte))
+            return TypeSignature.Byte;
+
+        if (t == typeof(char))
+            return TypeSignature.Char;
+
+        if (t == typeof(short))
+            return TypeSignature.Short;
+
+        if (t == typeof(int))
+            return TypeSignature.Int;
+
+        if (t == typeof(long))
+            return TypeSignature.Long;
+
+        if (t == typeof(float))
+            return TypeSignature.Float;
+
+        if (t == typeof(double))
+            return TypeSignature.Double;
+
+        throw new ArgumentException($"GetTypeSignature Type {t} not supported.");
+    }
+
     public static class TypeSignature
     {
         public const string Bool = "Z";
@@ -19,47 +50,5 @@ public static partial class JNI
         public const string Float = "F";
 
         public const string Double = "D";
-    }
-
-    public static string GetTypeSignature<T>()
-    {
-        Type t = typeof(T);
-
-        if (t == typeof(bool))
-        {
-            return TypeSignature.Bool;
-        }
-        else if (t == typeof(sbyte))
-        {
-            return TypeSignature.Byte;
-        }
-        else if (t == typeof(char))
-        {
-            return TypeSignature.Char;
-        }
-        else if (t == typeof(short))
-        {
-            return TypeSignature.Short;
-        }
-        else if (t == typeof(int))
-        {
-            return TypeSignature.Int;
-        }
-        else if (t == typeof(long))
-        {
-            return TypeSignature.Long;
-        }
-        else if (t == typeof(float))
-        {
-            return TypeSignature.Float;
-        }
-        else if (t == typeof(double))
-        {
-            return TypeSignature.Double;
-        }
-        else
-        {
-            throw new ArgumentException($"GetTypeSignature Type {t} not supported.");
-        }
     }
 }

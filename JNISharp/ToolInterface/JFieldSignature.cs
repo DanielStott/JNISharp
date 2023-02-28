@@ -1,9 +1,17 @@
-﻿namespace JNISharp.ToolInterface;
+﻿using System.Text.Json.Serialization;
 
-using System.Text.Json.Serialization;
+namespace JNISharp.ToolInterface;
 
 public class JFieldSignature
 {
+    public JFieldSignature(string name, string sig, string generic, JFieldAccessFlags flags)
+    {
+        Name = name;
+        Signature = sig;
+        Generic = generic;
+        AccessFlags = flags;
+    }
+
     [JsonInclude]
     public string Name { get; init; }
 
@@ -16,12 +24,4 @@ public class JFieldSignature
 
     [JsonInclude]
     public JFieldAccessFlags AccessFlags { get; init; }
-
-    public JFieldSignature(string name, string sig, string generic, JFieldAccessFlags flags)
-    {
-        this.Name = name;
-        this.Signature = sig;
-        this.Generic = generic;
-        this.AccessFlags = flags;
-    }
 }

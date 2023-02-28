@@ -1,16 +1,15 @@
-﻿namespace JNISharp.NativeInterface;
+﻿using System.Runtime.InteropServices;
 
-using System;
-using System.Runtime.InteropServices;
+namespace JNISharp.NativeInterface;
 
 /// <summary>
-/// Represents a JavaVM C struct.
+///     Represents a JavaVM C struct.
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-internal readonly unsafe struct JavaVM
+internal unsafe readonly struct JavaVM
 {
     [StructLayout(LayoutKind.Sequential)]
-    internal readonly unsafe struct FunctionTable
+    internal readonly struct FunctionTable
     {
         internal readonly IntPtr Reserved0;
 

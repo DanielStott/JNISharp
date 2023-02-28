@@ -1,15 +1,17 @@
-﻿namespace JNISharp.NativeInterface;
+﻿using System.Collections;
 
-using System.Collections;
-using System.Collections.Generic;
+namespace JNISharp.NativeInterface;
 
 public record JArray<T> : JObject, IEnumerable<T>
 {
-    public JArray() : base()
+    public JArray()
     {
     }
 
-    public JArray(int size) => JNI.NewArray<T>(size);
+    public JArray(int size)
+    {
+        JNI.NewArray<T>(size);
+    }
 
     public int Length => JNI.GetArrayLength(this);
 
@@ -19,21 +21,13 @@ public record JArray<T> : JObject, IEnumerable<T>
         set => JNI.SetArrayElement(this, index, value);
     }
 
-    public T[] GetElements()
-    {
-        return JNI.GetArrayElements(this);
-    }
-
     public IEnumerator<T> GetEnumerator()
     {
-        for (int i = 0; i < this.Length; i++)
-        {
+        for (var i = 0; i < Length; i++)
             yield return JNI.GetArrayElement(this, i);
-        }
     }
 
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return this.GetEnumerator();
-    }
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+    public T[] GetElements() => JNI.GetArrayElements(this);
 }

@@ -1,9 +1,9 @@
-﻿namespace JNISharp.NativeInterface;
+﻿using System.Runtime.InteropServices;
 
-using System.Runtime.InteropServices;
+namespace JNISharp.NativeInterface;
 
 [StructLayout(LayoutKind.Sequential)]
-public unsafe struct JavaVMOption
+public struct JavaVMOption
 {
     public IntPtr OptionString;
 
@@ -11,7 +11,7 @@ public unsafe struct JavaVMOption
 
     public JavaVMOption(string optionString)
     {
-        this.OptionString = Marshal.StringToHGlobalAnsi(optionString);
-        this.ExtraInfo = IntPtr.Zero;
+        OptionString = Marshal.StringToHGlobalAnsi(optionString);
+        ExtraInfo = IntPtr.Zero;
     }
 }

@@ -1,6 +1,6 @@
-﻿namespace JNISharp.NativeInterface;
+﻿using System.Collections;
 
-using System.Collections;
+namespace JNISharp.NativeInterface;
 
 public record JObjectArray<T> : JObject, IEnumerable<T> where T : JObject, new()
 {
@@ -12,21 +12,16 @@ public record JObjectArray<T> : JObject, IEnumerable<T> where T : JObject, new()
         set => JNI.SetObjectArrayElement(this, index, value);
     }
 
+    public IEnumerator<T> GetEnumerator()
+    {
+        for (var i = 0; i < Length; i++)
+            yield return JNI.GetObjectArrayElement(this, i);
+    }
+
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
     public void SetElement(T value, int index)
     {
         JNI.SetObjectArrayElement(this, index, value);
-    }
-
-    public IEnumerator<T> GetEnumerator()
-    {
-        for (int i = 0; i < this.Length; i++)
-        {
-            yield return JNI.GetObjectArrayElement(this, i);
-        }
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return this.GetEnumerator();
     }
 }

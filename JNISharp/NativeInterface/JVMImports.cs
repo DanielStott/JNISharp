@@ -1,8 +1,8 @@
-﻿namespace JNISharp.NativeInterface;
+﻿using System.Runtime.InteropServices;
 
-using System.Runtime.InteropServices;
+namespace JNISharp.NativeInterface;
 
-internal unsafe static class JVMImports
+internal static unsafe class JVMImports
 {
     [DllImport("jvm.dll", CallingConvention = CallingConvention.Winapi)]
     internal static extern JNI.Result JNI_CreateJavaVM(out JavaVM* jvm, out JNIEnv* env, JavaVMInitArgs* args);

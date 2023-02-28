@@ -2,14 +2,14 @@
 
 public class JThrowableException : Exception
 {
-    public JThrowable Throwable { get; init; }
-
     public JThrowableException()
     {
     }
 
-    public JThrowableException(JThrowable throwable) : base()
+    public JThrowableException(JThrowable throwable)
     {
-        this.Throwable = throwable;
+        Throwable = throwable;
     }
+
+    public JThrowable Throwable { get; init; }
 }

@@ -1,7 +1,7 @@
-﻿namespace JNISharp.ToolInterface;
-
+﻿using System.Runtime.InteropServices;
 using JNISharp.NativeInterface;
-using System.Runtime.InteropServices;
+
+namespace JNISharp.ToolInterface;
 
 public static partial class JVMTI
 {
