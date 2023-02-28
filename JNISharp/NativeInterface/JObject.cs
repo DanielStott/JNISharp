@@ -64,4 +64,10 @@ public record JObject : IDisposable
         Dispose(disposing: true);
         GC.SuppressFinalize(this);
     }
+    
+    public override string ToString()
+    {
+        var methodId = JNI.GetObjectClass(this).GetMethodID("toString", "()Ljava/lang/String;");
+        return JNI.CallObjectMethod<JString>(this, methodId).GetString();
+    }
 }
